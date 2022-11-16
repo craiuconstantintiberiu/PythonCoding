@@ -1,0 +1,127 @@
+Your task is to write a very simple benchmarking tool in Python.
+
+This tool consists of one class: `Benchmark`.
+A Benchmark object can do two things: 1) It can record a time, and 2) it can record a tag for every recorded time.
+
+Further, the same Benchmark object can be used in one of two ways: 1) As a decorator, and 2) as a context manager.
+
+Example:
+
+```python
+
+benchmark = Benchmark()
+
+
+with benchmark(tag='my-experiment'):
+	# every time this context is entered, `benchmark` will record the time it takes to execute the context
+	# this time will be stored and associated with the provided `tag`
+	...
+
+@benchmark(tag='my-function-experiment')
+def f(*args):
+	# every time f is called, benchmark will record the time it takes to execute f
+	# this time will be stored and associated with the provided `tag`
+	...
+
+@benchmark()
+def f(*args):
+	# every time f is called, benchmark will record the time it takes to execute f
+	# this time will be stored and associated with the name of the function `f` (so the tag will be 'f')
+	...
+```
+
+Task 1:
+
+Implement `Benchmark` as described above.
+Once a time is recorded, the Benchmark object should print it alongside the associated tag.
+The Benchmark object does not need to keep a permanent record of the recorded times and tags.
+
+Task 2:
+
+Modify `Benchmark` from Task 1 such that it provides an additional method `summary()`.
+When `benchmark.summary()` is called, it should print the average time and time variance for every tag that was recorded.
+For this to work, a Benchmark object will now have to store some statistics about all recorded times and associated tags.
+
+Example:
+
+```python
+
+benchmark = Benchmark()
+
+
+@benchmark(tag='my-function-experiment')
+def f(*args):
+	# every time f is called, benchmark will record the time it takes to execute f
+	# this time will be stored and associated with the provided `tag`
+	...
+
+f()
+f()
+
+benchmark.summary()  # this should print the average time and time variance across the two executions of `f()`
+```
+
+
+After you are done, the code skeleton below should be runnable and print the timing information.
+
+You only need to fill in the `Benchmark` class.
+You can define as many helper functions and/or classes as you want.
+
+
+Code skeleton:
+
+```python
+
+import time
+
+class Benchnmark:
+    """
+    An object of this class can either be user as a context manager or a decorator.
+    It records the time and the tag of the call.
+    """
+    ...
+
+
+
+
+
+def run_benchmark_decorator():
+    benchmark = Benchnmark()
+
+    @benchmark()
+    def f():
+        time.sleep(1)
+
+    @benchmark()
+    def g():
+        time.sleep(1)
+
+    fns_to_benchmark = [f, f, g, g]
+    for fn in fns_to_benchmark:
+        fn()
+
+    # benchmark.summary()  # uncomment this line for Task 2
+
+
+def run_benchmark_context_mngr():
+
+    def f():
+        time.sleep(1)
+
+    def g():
+        time.sleep(1)
+
+    benchmark = Benchnmark()
+
+    fns_to_benchmark = [f, f, g, g]
+    for fn in fns_to_benchmark:
+        with benchmark(tag=f'{fn.__name__}'):
+            fn()
+
+    # benchmark.summary()  # uncomment this line for Task 2
+
+
+if __name__ == '__main__':
+    run_benchmark_decorator()
+    run_benchmark_context_mngr()
+```
